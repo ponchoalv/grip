@@ -6,6 +6,7 @@
   var loadedScripts = {};
   var importMapInstalled = false;
   var mermaid;
+  var diagramId = 0;
 
   function loadScript(url) {
     if (loadedScripts[url]) return loadedScripts[url];
@@ -54,7 +55,8 @@
       mermaid.initialize({startOnLoad: false, securityLevel: 'strict'});
     }
     var element = replace(pre, 'grip-diagram-mermaid');
-    var result = await mermaid.render('grip-mermaid-' + Date.now() + '-' + Math.random(), source(pre));
+    diagramId += 1;
+    var result = await mermaid.render('grip-mermaid-' + diagramId, source(pre));
     element.innerHTML = result.svg;
   }
 
