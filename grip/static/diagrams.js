@@ -7,6 +7,26 @@
   var importMapInstalled = false;
   var mermaid;
   var diagramId = 0;
+  var mermaidThemeVariables = {
+    background: '#0d1117',
+    primaryColor: '#27133f',
+    primaryTextColor: '#f5f0ff',
+    primaryBorderColor: '#a371f7',
+    secondaryColor: '#201137',
+    tertiaryColor: '#170b29',
+    lineColor: '#c297ff',
+    clusterBkg: '#24113d',
+    clusterBorder: '#a371f7',
+    edgeLabelBackground: '#2b174a'
+  };
+  var mermaidThemeCSS = [
+    '.flowchart-link { stroke: #c297ff !important; stroke-width: 1.6px !important; }',
+    '.marker, .arrowheadPath { fill: #c297ff !important; stroke: #c297ff !important; }',
+    '.node rect, .node polygon, .node circle { stroke: #a371f7 !important; }',
+    '.nodeLabel, .nodeLabel tspan { fill: #f5f0ff !important; }',
+    '.edgeLabel text { fill: #f5f0ff !important; }',
+    '.edgeLabel .background { fill: #2b174a !important; stroke: none !important; }'
+  ].join(' ');
 
   function loadScript(url) {
     if (loadedScripts[url]) return loadedScripts[url];
@@ -92,7 +112,9 @@
       mermaid.initialize({
         startOnLoad: false,
         securityLevel: 'strict',
-        theme: prefersDarkTheme() ? 'dark' : 'default'
+        theme: prefersDarkTheme() ? 'dark' : 'default',
+        themeVariables: mermaidThemeVariables,
+        themeCSS: mermaidThemeCSS
       });
     }
     var element = replace(pre, 'grip-diagram-mermaid');
