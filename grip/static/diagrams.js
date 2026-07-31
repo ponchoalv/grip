@@ -49,15 +49,58 @@
     element.textContent += '\n\nGrip could not render this diagram: ' + error.message;
   }
 
+  function prefersDarkTheme() {
+    return document.documentElement.dataset.colorMode === 'dark' ||
+      window.matchMedia('(prefers-color-scheme: dark)').matches;
+  }
+
+  function addMermaidControls(element, svg) {
+    var scale = 1;
+    var controls = document.createElement('div');
+    controls.className = 'grip-diagram-controls';
+    var viewport = document.createElement('div');
+    viewport.className = 'grip-mermaid-viewport';
+    viewport.appendChild(svg);
+
+    function applyScale() {
+      svg.style.width = (scale * 100) + '%';
+      svg.setAttribute('aria-label', 'Mermaid diagram at ' + Math.round(scale * 100) + '% zoom');
+    }
+
+    [['−', 'Zoom out', function () { scale = Math.max(0.5, scale - 0.1); }],
+     ['+', 'Zoom in', function () { scale = Math.min(3, scale + 0.1); }],
+     ['Reset', 'Reset zoom', function () { scale = 1; }]].forEach(function (definition) {
+      var button = document.createElement('button');
+      button.type = 'button';
+      button.textContent = definition[0];
+      button.title = definition[1];
+      button.addEventListener('click', function () {
+        definition[2]();
+        applyScale();
+      });
+      controls.appendChild(button);
+    });
+
+    element.appendChild(controls);
+    element.appendChild(viewport);
+    applyScale();
+  }
+
   async function renderMermaid(pre) {
     if (!mermaid) {
       mermaid = (await import(CDN + 'mermaid@11/dist/mermaid.esm.min.mjs')).default;
-      mermaid.initialize({startOnLoad: false, securityLevel: 'strict'});
+      mermaid.initialize({
+        startOnLoad: false,
+        securityLevel: 'strict',
+        theme: prefersDarkTheme() ? 'dark' : 'default'
+      });
     }
     var element = replace(pre, 'grip-diagram-mermaid');
     diagramId += 1;
     var result = await mermaid.render('grip-mermaid-' + diagramId, source(pre));
-    element.innerHTML = result.svg;
+    var wrapper = document.createElement('div');
+    wrapper.innerHTML = result.svg;
+    addMermaidControls(element, wrapper.firstElementChild);
   }
 
   async function renderMap(pre, type) {
