@@ -23,6 +23,7 @@ from grip import (
     DEFAULT_FILENAME, DirectoryReader, GitHubAssetManager, GitHubRenderer,
     Grip, ReadmeNotFoundError, ReadmeReader, ReadmeRenderer, TextReader,
     create_app)
+from grip.patcher import patch
 
 
 # TODO: Test DEFAULT_API_URL, DEFAULT_FILENAMES, DEFAULT_GRIPHOME,
@@ -217,6 +218,39 @@ def test_github_renderer():
         with pytest.raises(HTTPError):
             GitHubRenderer().render(simple_input, GitHubRequestsMock.bad_auth)
         assert len(responses.calls) == 2
+
+
+def test_diagram_fences_are_marked_for_local_rendering():
+    markdown = '''```mermaid
+graph TD
+  A --> B
+```
+
+```geojson
+{"type": "Point", "coordinates": [0, 0]}
+```
+
+```topojson
+{"type": "Topology", "objects": {}}
+```
+
+```stl
+solid triangle
+endsolid
+```'''
+    html = ('<div class="highlight"><pre>graph TD\n  A --&gt; B</pre></div>'
+            '<div class="highlight"><pre>{&quot;type&quot;: &quot;Point&quot;, '
+            '&quot;coordinates&quot;: [0, 0]}</pre></div>'
+            '<div class="highlight"><pre>{&quot;type&quot;: &quot;Topology&quot;, '
+            '&quot;objects&quot;: {}}</pre></div>'
+            '<div class="highlight"><pre>solid triangle\nendsolid</pre></div>')
+
+    rendered = patch(html, text=markdown)
+
+    assert 'data-grip-diagram="mermaid"' in rendered
+    assert 'data-grip-diagram="geojson"' in rendered
+    assert 'data-grip-diagram="topojson"' in rendered
+    assert 'data-grip-diagram="stl"' in rendered
 
 
 def test_offline_renderer():

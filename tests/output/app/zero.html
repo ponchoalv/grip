@@ -5,6 +5,7 @@
   <title>zero.md - Grip</title>
   <link rel="icon" href="/__/grip/static/favicon.ico" />
   <link rel="stylesheet" href="/__/grip/static/octicons/octicons.css" />
+  <link rel="stylesheet" href="/__/grip/static/diagrams.css" />
   <style>
     /* Page tweaks */
     .preview-page {
@@ -60,7 +61,8 @@
       </div>
     </main>
   </div>
-  </div><script>
+  </div><script src="/__/grip/static/diagrams.js" defer></script>
+  <script>
     function showCanonicalImages() {
       var images = document.getElementsByTagName('img');
       if (!images) {
@@ -99,6 +101,7 @@
           document.title = initialTitle;
           contentElement.innerHTML = msg.content;
           showCanonicalImages();
+          window.GripDiagrams.render(contentElement);
         }
       }
 
@@ -116,6 +119,7 @@
 
     window.onload = function() {
       scrollToHash();
+      window.GripDiagrams.render(document);
     }
 
     showCanonicalImages();

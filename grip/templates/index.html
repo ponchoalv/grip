@@ -7,6 +7,7 @@
   <link rel="stylesheet" href="{{ style_url }}" />
   {%- endfor %}
   <link rel="stylesheet" href="{{ url_for('static', filename='octicons/octicons.css') }}" />
+  <link rel="stylesheet" href="{{ url_for('static', filename='diagrams.css') }}" />
   {%- if styles %}
   <style>
     {%- for style in styles %}
@@ -33,6 +34,7 @@
 {%- endblock -%}
 
 {%- block scripts -%}
+  <script src="{{ url_for('static', filename='diagrams.js') }}" defer></script>
   <script>
     function showCanonicalImages() {
       var images = document.getElementsByTagName('img');
@@ -72,6 +74,7 @@
           document.title = initialTitle;
           contentElement.innerHTML = msg.content;
           showCanonicalImages();
+          window.GripDiagrams.render(contentElement);
         }
       }
 
@@ -89,6 +92,7 @@
 
     window.onload = function() {
       scrollToHash();
+      window.GripDiagrams.render(document);
     }
 
     showCanonicalImages();

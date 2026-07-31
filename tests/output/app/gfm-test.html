@@ -5,6 +5,7 @@
   <title>gfm-test.md - Grip</title>
   <link rel="icon" href="/__/grip/static/favicon.ico" />
   <link rel="stylesheet" href="/__/grip/static/octicons/octicons.css" />
+  <link rel="stylesheet" href="/__/grip/static/diagrams.css" />
   <style>
     /* Page tweaks */
     .preview-page {
@@ -598,7 +599,8 @@ Violets are Blue</p>
       </div>
     </main>
   </div>
-  </div><script>
+  </div><script src="/__/grip/static/diagrams.js" defer></script>
+  <script>
     function showCanonicalImages() {
       var images = document.getElementsByTagName('img');
       if (!images) {
@@ -637,6 +639,7 @@ Violets are Blue</p>
           document.title = initialTitle;
           contentElement.innerHTML = msg.content;
           showCanonicalImages();
+          window.GripDiagrams.render(contentElement);
         }
       }
 
@@ -654,6 +657,7 @@ Violets are Blue</p>
 
     window.onload = function() {
       scrollToHash();
+      window.GripDiagrams.render(document);
     }
 
     showCanonicalImages();
