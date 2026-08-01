@@ -3,6 +3,11 @@
   'use strict';
 
   var CDN = 'https://cdn.jsdelivr.net/npm/';
+  /* Pinned and transpiled to Safari 12 for older xwidget WebKit engines. */
+  var MERMAID_BUNDLE = 'mermaid-11.16.0-legacy.min.js';
+  var currentScript = document.currentScript;
+  var staticBase = currentScript && currentScript.src ?
+    currentScript.src.slice(0, currentScript.src.lastIndexOf('/') + 1) : '';
   var loadedScripts = {};
   var importMapInstalled = false;
   var mermaid;
@@ -108,7 +113,10 @@
 
   async function renderMermaid(pre) {
     if (!mermaid) {
-      mermaid = (await import(CDN + 'mermaid@11/dist/mermaid.esm.min.mjs')).default;
+      await loadScript(staticBase + MERMAID_BUNDLE);
+      mermaid = window.GripMermaid &&
+        (window.GripMermaid.default || window.GripMermaid);
+      if (!mermaid) throw new Error('Bundled Mermaid failed to load');
       mermaid.initialize({
         startOnLoad: false,
         securityLevel: 'strict',

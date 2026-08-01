@@ -253,6 +253,26 @@ endsolid
     assert 'data-grip-diagram="stl"' in rendered
 
 
+def test_mermaid_renderer_uses_pinned_legacy_bundle():
+    static_dir = os.path.join(os.path.dirname(DIRNAME), 'grip', 'static')
+    renderer_path = os.path.join(static_dir, 'diagrams.js')
+    bundle_path = os.path.join(
+        static_dir, 'mermaid-11.16.0-legacy.min.js')
+
+    with open(renderer_path, 'rb') as renderer_file:
+        renderer = renderer_file.read().decode('utf-8')
+    with open(bundle_path, 'rb') as bundle_file:
+        bundle = bundle_file.read()
+
+    assert "MERMAID_BUNDLE = 'mermaid-11.16.0-legacy.min.js'" in renderer
+    assert 'mermaid@11/dist/mermaid.esm.min.mjs' not in renderer
+    assert bundle.startswith(
+        b'/*! Mermaid 11.16.0 legacy bundle; target: Safari 12 */')
+    assert b'var GripMermaid=' in bundle
+    assert b'import(' not in bundle
+    assert b'static{' not in bundle
+
+
 def test_offline_renderer():
     # TODO: Test all GitHub rendering features and get the renderer to pass
     # FUTURE: Expose OfflineRenderer once all Markdown features are tested
