@@ -269,6 +269,8 @@ def test_mermaid_renderer_uses_pinned_legacy_bundle():
     assert bundle.startswith(
         b'/*! Mermaid 11.16.0 legacy bundle; target: Safari 12 */')
     assert b'var GripMermaid=' in bundle
+    assert b'GripCSSStyleSheet' in bundle
+    assert b'new CSSStyleSheet' not in bundle
     assert b'import(' not in bundle
     assert b'static{' not in bundle
 
