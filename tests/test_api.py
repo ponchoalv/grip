@@ -253,16 +253,20 @@ endsolid
     assert 'data-grip-diagram="stl"' in rendered
 
 
-def test_mermaid_renderer_uses_pinned_legacy_bundle():
+def test_diagram_renderers_use_pinned_legacy_bundles():
     static_dir = os.path.join(os.path.dirname(DIRNAME), 'grip', 'static')
     renderer_path = os.path.join(static_dir, 'diagrams.js')
     bundle_path = os.path.join(
         static_dir, 'mermaid-11.16.0-legacy.min.js')
+    three_bundle_path = os.path.join(
+        static_dir, 'three-0.180.0-stl-legacy.min.js')
 
     with open(renderer_path, 'rb') as renderer_file:
         renderer = renderer_file.read().decode('utf-8')
     with open(bundle_path, 'rb') as bundle_file:
         bundle = bundle_file.read()
+    with open(three_bundle_path, 'rb') as three_bundle_file:
+        three_bundle = three_bundle_file.read()
 
     assert "MERMAID_BUNDLE = 'mermaid-11.16.0-legacy.min.js'" in renderer
     assert "svg.style.maxWidth = 'none'" in renderer
@@ -275,6 +279,14 @@ def test_mermaid_renderer_uses_pinned_legacy_bundle():
     assert b'new CSSStyleSheet' not in bundle
     assert b'import(' not in bundle
     assert b'static{' not in bundle
+    assert "THREE_STL_BUNDLE = 'three-0.180.0-stl-legacy.min.js'" in renderer
+    assert "import('three')" not in renderer
+    assert 'installThreeImportMap' not in renderer
+    assert three_bundle.startswith(
+        b'/*! Three.js 0.180.0 STL legacy bundle; target: Safari 12 */')
+    assert b'var GripThree=' in three_bundle
+    assert b'import(' not in three_bundle
+    assert b'static{' not in three_bundle
 
 
 def test_offline_renderer():

@@ -5,12 +5,13 @@
   var CDN = 'https://cdn.jsdelivr.net/npm/';
   /* Pinned and transpiled to Safari 12 for older xwidget WebKit engines. */
   var MERMAID_BUNDLE = 'mermaid-11.16.0-legacy.min.js';
+  var THREE_STL_BUNDLE = 'three-0.180.0-stl-legacy.min.js';
   var currentScript = document.currentScript;
   var staticBase = currentScript && currentScript.src ?
     currentScript.src.slice(0, currentScript.src.lastIndexOf('/') + 1) : '';
   var loadedScripts = {};
-  var importMapInstalled = false;
   var mermaid;
+  var threeStl;
   var diagramId = 0;
   var mermaidThemeVariables = {
     background: '#0d1117',
@@ -43,18 +44,6 @@
       document.head.appendChild(script);
     });
     return loadedScripts[url];
-  }
-
-  function installThreeImportMap() {
-    if (importMapInstalled) return;
-    var map = document.createElement('script');
-    map.type = 'importmap';
-    map.textContent = JSON.stringify({imports: {
-      three: CDN + 'three@0.180.0/build/three.module.min.js',
-      'three/addons/': CDN + 'three@0.180.0/examples/jsm/'
-    }});
-    document.head.appendChild(map);
-    importMapInstalled = true;
   }
 
   function source(pre) {
@@ -175,15 +164,14 @@
   }
 
   async function renderStl(pre) {
-    installThreeImportMap();
-    var modules = await Promise.all([
-      import('three'),
-      import('three/addons/loaders/STLLoader.js'),
-      import('three/addons/controls/OrbitControls.js')
-    ]);
-    var THREE = modules[0];
-    var STLLoader = modules[1].STLLoader;
-    var OrbitControls = modules[2].OrbitControls;
+    if (!threeStl) {
+      await loadScript(staticBase + THREE_STL_BUNDLE);
+      threeStl = window.GripThree;
+      if (!threeStl) throw new Error('Bundled Three.js STL renderer failed to load');
+    }
+    var THREE = threeStl.THREE;
+    var STLLoader = threeStl.STLLoader;
+    var OrbitControls = threeStl.OrbitControls;
     var element = replace(pre, 'grip-diagram-stl');
     var renderer = new THREE.WebGLRenderer({antialias: true});
     renderer.setSize(element.clientWidth || 640, element.clientHeight || 360);
