@@ -81,6 +81,9 @@
 
   function addMermaidControls(element, svg) {
     var scale = 1;
+    var baseWidth;
+    var initialWidth = svg.style.width;
+    var initialMaxWidth = svg.style.maxWidth;
     var controls = document.createElement('div');
     controls.className = 'grip-diagram-controls';
     var viewport = document.createElement('div');
@@ -88,7 +91,14 @@
     viewport.appendChild(svg);
 
     function applyScale() {
-      svg.style.width = (scale * 100) + '%';
+      if (scale === 1) {
+        svg.style.width = initialWidth;
+        svg.style.maxWidth = initialMaxWidth;
+        baseWidth = svg.getBoundingClientRect().width;
+      } else {
+        svg.style.maxWidth = 'none';
+        svg.style.width = (baseWidth * scale) + 'px';
+      }
       svg.setAttribute('aria-label', 'Mermaid diagram at ' + Math.round(scale * 100) + '% zoom');
     }
 

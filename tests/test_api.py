@@ -265,6 +265,8 @@ def test_mermaid_renderer_uses_pinned_legacy_bundle():
         bundle = bundle_file.read()
 
     assert "MERMAID_BUNDLE = 'mermaid-11.16.0-legacy.min.js'" in renderer
+    assert "svg.style.maxWidth = 'none'" in renderer
+    assert "(baseWidth * scale) + 'px'" in renderer
     assert 'mermaid@11/dist/mermaid.esm.min.mjs' not in renderer
     assert bundle.startswith(
         b'/*! Mermaid 11.16.0 legacy bundle; target: Safari 12 */')
