@@ -44,6 +44,7 @@ Options:
 
 from __future__ import print_function
 
+import os
 import sys
 import mimetypes
 import socket
@@ -106,9 +107,10 @@ def main(argv=None, force_utf8=True, patch_svg=True):
         password = getpass()
 
     # Parse theme argument
-    if args['--theme']:
-        if args['--theme'] in VALID_THEME_OPTIONS:
-            theme: str = args['--theme']
+    theme = args['--theme'] or os.environ.get('GRIP_THEME', 'light')
+    if theme:
+        if theme in VALID_THEME_OPTIONS:
+            theme: str = theme
         else:
             print('Error: valid options for theme argument are "light", "dark"')
             return 1

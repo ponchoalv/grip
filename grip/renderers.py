@@ -81,7 +81,7 @@ class GitHubRenderer(ReadmeRenderer):
         # FUTURE: Remove this once GitHub API properly handles Unicode markdown
         r.encoding = 'utf-8'
 
-        return r.text if self.raw else patch(r.text)
+        return r.text if self.raw else patch(r.text, self.user_content, text)
 
 
 class OfflineRenderer(ReadmeRenderer):
